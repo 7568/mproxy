@@ -620,7 +620,7 @@ void usage(void)
     exit (8);
 }
 
-void start_server(int daemon)
+void start_server(int is_daemon)
 {
     //初始化全局变量
     header_buffer = (char *) malloc(MAX_HEADER_SIZE);
@@ -633,23 +633,10 @@ void start_server(int daemon)
         exit(server_sock);
     }
    
-    if(daemon)
+    if(is_daemon)
     {
-        pid_t pid;
-        if((pid = fork()) == 0)
-        {
-            server_loop();
-        } else if (pid > 0 ) 
-        {
-            m_pid = pid;
-            LOG("mporxy pid is: [%d]\n",pid);
-            close(server_sock);
-        } else 
-        {
-            LOG("Cannot daemonize\n");
-            exit(pid);
-        }
-
+        daemon(0,0);
+        server_loop();
     } else 
     {
         server_loop();
